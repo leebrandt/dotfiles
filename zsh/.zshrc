@@ -110,4 +110,37 @@ source $ZSH/oh-my-zsh.sh
 alias gpom="git push origin main"
 alias edit="nvim"
 
+
+# Personal aliases
+alias edit="nvim"
+CONTENT_OS="/Users/leebrandt/Documents/content-os"
+
+newidea() {
+  title="$1"
+  timestamp=$(date +%Y%m%d%H%M%S)
+  filename="$CONTENT_OS/ideas/${timestamp}.mdx"
+  echo "# $title" > "$filename"
+  echo "Created: $filename"
+}
+
+newproject() {
+  projectname="$1"
+  idea="$2"
+  mkdir -p "$CONTENT_OS/projects/$projectname"
+  cp "$CONTENT_OS/ideas/${idea}.mdx" "$CONTENT_OS/projects/$projectname/idea.mdx"
+  echo "Created project: $projectname"
+  echo "Copied idea: ${idea}.mdx"
+}
+
+# copies and makes missing directories
+# made for use in copying dotfiles 
+# cpr ~/.zshrc ~/@Source/dotfiles/zsh/.zshrc 
+# (where the 'zsh' directory doesn't exist)
+cpr() {
+  source="$1"
+  dest="$2"
+  mkdir -p "${dest%/*}"
+  cp "$source" "$dest"
+}
+
 eval "$(oh-my-posh init zsh)"
