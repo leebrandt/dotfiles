@@ -1,0 +1,18 @@
+[font]
+normal = { family = "FiraCode Nerd Font", style = "Regular" }
+# normal = { family = "Cascadia Code", style = "Regular" }
+italic = { family = "Cascadia Code", style = "Italic" }
+size = 16.0
+
+[font.offset]
+x = 0
+y = 1  # slightly raise glyphs
+
+[window]
+# opacity = 0.95
+
+[general]
+import = ["~/.config/alacritty/catppuccin-mocha.toml"]
+
+[terminal]
+osc52 = "CopyPaste"
