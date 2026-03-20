@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+export PATH="/opt/homebrew/opt/python@3.14/libexec/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -16,6 +19,10 @@ CATPPUCCIN_FLAVOR="mocha"
 # a theme from this variable instead of looking in $ZSH/themes/
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+
+# autocomplete nd syntax-highlighting
+# source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -43,6 +50,11 @@ CATPPUCCIN_FLAVOR="mocha"
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
+
+# For Dokcker completions
+fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+autoload -Uz compinit && compinit
+
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 # You can also set it to another string to have that shown instead of the default red dots.
@@ -99,42 +111,24 @@ source $ZSH/oh-my-zsh.sh
 #
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-alias gpom="git push origin main"
 
 # In main .zshrc (gets stowed)
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 
 # Personal aliases
+alias gpom="git push origin main"
+alias ohmyzsh="nvim ~/.oh-my-zsh"
 alias edit="nvim"
+alias l="eza -lah"
+alias ll="eza -lh"
+alias pip="pip3"
+alias python="python3"
+alias lad="lazydocker"
+alias lag="lazygit"
+alias dpok='docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -v k8s'
 
-newidea() {
-  title="$1"
-  timestamp=$(date +%Y%m%d%H%M%S)
-  filename="$CONTENT_OS/ideas/${timestamp}.mdx"
-  echo "# $title" > "$filename"
-  echo "Created: $filename"
-}
-
-newproject() {
-  projectname="$1"
-  idea="$2"
-  mkdir -p "$CONTENT_OS/projects/$projectname"
-  cp "$CONTENT_OS/ideas/${idea}.mdx" "$CONTENT_OS/projects/$projectname/idea.mdx"
-  echo "Created project: $projectname"
-  echo "Copied idea: ${idea}.mdx"
-}
-
-showideas() {
-  for file in "$CONTENT_OS"/ideas/*.mdx; do
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "📄 $(basename $file)"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    cat "$file"
-    echo ""
-    echo ""
-  done
-}
+export EDITOR=nvim
+export VISUAL=nvim
 
 # copies and makes missing directories
 # made for use in copying dotfiles 
@@ -153,6 +147,10 @@ cpr() {
 
 eval "$(oh-my-posh init zsh)"
 
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 #export SDKMAN_DIR="$HOME/.sdkman"
 #[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# Created by `pipx` on 2026-02-25 05:34:08
+export PATH="$PATH:/Users/lee/.local/bin"
