@@ -26,4 +26,4 @@ You receive a completed PRD from $SPECS_DIR/prd.md.
 3. Identify discrete technical specs and present the full ordered list to the user for review.
 4. Order specs by: **priority first, then maximum parallelism** — specs that can be worked simultaneously should be at the same priority level.
 5. Get explicit sign-off on the spec list before writing anything.
-6. Write approved specs to $SPECS_DIR/specs/<feature-slug>-<n>.md
+6. Write approved specs to $SPECS_DIR/<n>-<feature-slug>.md
