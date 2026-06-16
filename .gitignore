@@ -1,0 +1,13 @@
+.local
+.DS_Store
+*.swp
+*.swo
+*.swn
+*~
+*.bak
+
+# Theme images — too large for a dotfiles repo
+omarchy/**/*.png
+omarchy/**/*.jpg
+omarchy/**/*.jpeg
+omarchy/**/*.gif

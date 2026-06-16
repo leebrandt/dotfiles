@@ -1,0 +1,8 @@
+export PATH="/opt/homebrew/opt/python@3.14/libexec/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
+
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+export PATH="$PATH:/Users/lee/.local/bin"
+
+eval "$(oh-my-posh init zsh)"
