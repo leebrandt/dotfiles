@@ -2,6 +2,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
+DRY_RUN=false
 
 info()  { printf "\033[1;34m==>\033[0m %s\n" "$1"; }
 ok()    { printf "\033[1;32m ✓\033[0m %s\n" "$1"; }
@@ -11,18 +12,26 @@ OS="$(uname -s)"
 
 check_stow() {
   if ! command -v stow &>/dev/null; then
-    info "Installing GNU Stow..."
-    case "$OS" in
-      Darwin) brew install stow ;;
-      Linux)  sudo pacman -S --noconfirm stow ;;
-    esac
-    ok "Stow installed"
+    if $DRY_RUN; then
+      info "[dry-run] Would install GNU Stow"
+    else
+      info "Installing GNU Stow..."
+      case "$OS" in
+        Darwin) brew install stow ;;
+        Linux)  sudo pacman -S --noconfirm stow ;;
+      esac
+      ok "Stow installed"
+    fi
   else
     ok "Stow already installed"
   fi
 }
 
 install_packages() {
+  if $DRY_RUN; then
+    info "[dry-run] Would install packages (skipping)"
+    return
+  fi
   case "$OS" in
     Darwin)
       info "Installing Homebrew packages..."
@@ -58,9 +67,13 @@ install_packages() {
 
 install_oh_my_zsh() {
   if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    info "Installing Oh My Zsh..."
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-    ok "Oh My Zsh installed"
+    if $DRY_RUN; then
+      info "[dry-run] Would install Oh My Zsh"
+    else
+      info "Installing Oh My Zsh..."
+      sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+      ok "Oh My Zsh installed"
+    fi
   else
     ok "Oh My Zsh already installed"
   fi
@@ -79,6 +92,10 @@ stow_packages() {
   cd "$DOTFILES_DIR"
   for pkg in "${packages[@]}"; do
     if [ -d "$pkg" ]; then
+      if $DRY_RUN; then
+        stow --no --verbose=2 --target="$HOME" "$pkg" 2>&1 | sed 's/^/   /'
+        continue
+      fi
       info "Stowing $pkg..."
       stow --restow --target="$HOME" "$pkg" 2>/dev/null || {
         warn "Conflict while stowing $pkg — backing up conflicting files"
@@ -92,14 +109,24 @@ stow_packages() {
 
 setup_local_override() {
   if [ ! -f "$HOME/.zshrc.local" ]; then
-    echo "# Machine-local zsh overrides" > "$HOME/.zshrc.local"
-    ok "Created ~/.zshrc.local"
+    if $DRY_RUN; then
+      info "[dry-run] Would create ~/.zshrc.local"
+    else
+      echo "# Machine-local zsh overrides" > "$HOME/.zshrc.local"
+      ok "Created ~/.zshrc.local"
+    fi
   fi
 }
 
 main() {
+  for arg in "$@"; do
+    case "$arg" in
+      -n|--dry-run) DRY_RUN=true ;;
+    esac
+  done
+
   echo ""
-  info "Dotfiles bootstrap — $(uname -srm)"
+  info "Dotfiles bootstrap — $(uname -srm)${DRY_RUN:+ (dry-run)}"
   echo ""
 
   check_stow
@@ -109,7 +136,11 @@ main() {
   setup_local_override
 
   echo ""
-  ok "Done! Restart your shell or run: exec zsh"
+  if $DRY_RUN; then
+    warn "Dry-run complete — no changes made"
+  else
+    ok "Done! Restart your shell or run: exec zsh"
+  fi
 }
 
 main "$@"
