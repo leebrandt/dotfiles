@@ -118,6 +118,43 @@ setup_local_override() {
   fi
 }
 
+integrity_check() {
+  if $DRY_RUN; then
+    info "[dry-run] Skipping integrity check"
+    return
+  fi
+  info "Running integrity check..."
+  local failures=0
+  local files=0
+  cd "$DOTFILES_DIR"
+  while IFS= read -r -d '' f; do
+    rel="${f#./}"
+    pkg="${rel%%/*}"
+    target="${HOME}/${rel#*/}"
+    if [ -L "$target" ]; then
+      printf "  ✓  %s\n" "$rel"
+    else
+      printf "  ✗  %s — not a symlink\n" "$rel"
+      failures=$((failures + 1))
+    fi
+    files=$((files + 1))
+  done < <(find . -type f -path './*/*' \
+    -not -path './.git/*' \
+    -not -name '.gitkeep' \
+    -not -name '*.png' \
+    -not -name '*.jpg' \
+    -not -name '*.jpeg' \
+    -not -name '*.gif' \
+    -not -name '*.ico' \
+    -print0)
+  if [ "$failures" -gt 0 ]; then
+    warn "$failures / $files files are not symlinks"
+    exit 1
+  else
+    ok "All $files files are properly symlinked"
+  fi
+}
+
 main() {
   for arg in "$@"; do
     case "$arg" in
@@ -134,6 +171,7 @@ main() {
   install_oh_my_zsh
   stow_packages
   setup_local_override
+  integrity_check
 
   echo ""
   if $DRY_RUN; then
